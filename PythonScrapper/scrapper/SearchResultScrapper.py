@@ -20,26 +20,33 @@ def my_handler(html):
 
     response = []
 
+    # todo - get rid of sponsored results
+
     for result in results:
         if result is None:
-            break
+            continue
         else:
-            title_a = result.find("a", class_="s-access-detail-page")
-            fast_track_div = result.find("div", class_="a-row a-spacing-mini")
-            if title_a is None:
-                break
+            sponsor = result.find("h5", class_="s-sponsored-list-header")
+            if sponsor is not None:
+                # this is a sponsored result, skip
+                continue
             else:
-                title = title_a['title']
-                fast_track_msg_span = fast_track_div.find("span", class_="a-size-small a-color-secondary")
-                if fast_track_msg_span is None:
-                    fast_track_msg = "No Fast Track"
+                title_a = result.find("a", class_="s-access-detail-page")
+                fast_track_div = result.find("div", class_="a-row a-spacing-mini")
+                if title_a is None:
+                    continue
                 else:
-                    msg = fast_track_msg_span.text
-                    if "Get it by" in msg:
-                        fast_track_msg = msg
-                    else:
+                    title = title_a['title']
+                    fast_track_msg_span = fast_track_div.find("span", class_="a-size-small a-color-secondary")
+                    if fast_track_msg_span is None:
                         fast_track_msg = "No Fast Track"
-                response.append("{}#{}".format(title, fast_track_msg))
+                    else:
+                        msg = fast_track_msg_span.text
+                        if "Get it by" in msg:
+                            fast_track_msg = msg
+                        else:
+                            fast_track_msg = "No Fast Track"
+                    response.append("{}#{}".format(title, fast_track_msg))
     print("Titles size :\n{}\n".format(len(response)))
     print("\n".join(response))
     return response
